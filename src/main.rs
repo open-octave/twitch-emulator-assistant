@@ -67,6 +67,8 @@ fn execute_command(command: &str) {
 
 #[tokio::main]
 pub async fn main() {
+    println!("Starting Twitch Game Emulator Assistant");
+
     let config = ClientConfig::default();
     let (mut incoming_messages, client) =
         TwitchIRCClient::<SecureTCPTransport, StaticLoginCredentials>::new(config);
