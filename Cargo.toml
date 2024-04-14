@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 # target= "x86_64-pc-windows-msvc"
 # target= "aarch64-apple-darwin"
+# target= "stable-x86_64-pc-windows-gnu"
 
 
 [dependencies]
