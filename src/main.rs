@@ -86,7 +86,14 @@ pub async fn main() {
                     );
 
                     let command = &msg.message_text.to_lowercase();
-                    execute_command(command);
+
+                    // If the command is a valid command, execute it
+                    match command.as_str() {
+                        "a" | "b" | "x" | "y" | "up" | "down" | "left" | "right" => {
+                            execute_command(command);
+                        }
+                        _ => {}
+                    }
                 }
                 _ => {}
             }
