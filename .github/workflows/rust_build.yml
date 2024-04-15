@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: twitch-emulator-assistant-${{ matrix.target }}
-          path: target/${{ matrix.target }}/release/twitch-emulator-assistant
+          path: target/${{ matrix.target }}/release/twitch-emulator-assistant${{ matrix.target == 'x86_64-pc-windows-gnu' && '.exe' || '' }}
 
   release:
     needs: build
@@ -60,6 +60,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: twitch-emulator-assistant-${{ matrix.target }}
-          asset_name: twitch-emulator-assistant-${{ matrix.target }}.exe
+          asset_path: twitch-emulator-assistant-${{ matrix.target }}${{ matrix.target == 'x86_64-pc-windows-gnu' && '.exe' || '' }}
+          asset_name: twitch-emulator-assistant-${{ matrix.target }}${{ matrix.target == 'x86_64-pc-windows-gnu' && '.exe' || '' }}
           asset_content_type: application/octet-stream
