@@ -65,6 +65,7 @@ fn execute_command(command: &str) {
     focus_window();
 
     println!("Executing command");
+
     let mut enigo = Enigo::new();
     match command {
         "a" => enigo.key_click(enigo::Key::Layout('x')),
@@ -95,7 +96,9 @@ pub async fn main() {
                 ServerMessage::Privmsg(msg) => {
                     println!(
                         "(#{}) {}: {}",
-                        msg.channel_login, msg.sender.name, msg.message_text
+                        msg.channel_login,
+                        msg.sender.name,
+                        msg.message_text.trim()
                     );
 
                     let command = &msg.message_text.to_lowercase();
@@ -103,7 +106,7 @@ pub async fn main() {
                     // If the command is a valid command, execute it
                     match command.as_str() {
                         "a" | "b" | "x" | "y" | "up" | "down" | "left" | "right" => {
-                            execute_command(command);
+                            execute_command(command.trim());
                         }
                         _ => {}
                     }
