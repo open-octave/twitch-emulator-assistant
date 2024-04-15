@@ -18,6 +18,9 @@ use twitch_irc::message::ServerMessage;
 use twitch_irc::TwitchIRCClient;
 use twitch_irc::{ClientConfig, SecureTCPTransport};
 
+use std::io;
+use std::io::Write;
+
 #[cfg(target_os = "windows")]
 fn focus_window() {
     let window_name = OsStr::new("RetroArch 0.9.11 x64")
@@ -90,7 +93,18 @@ pub async fn main() {
         }
     });
 
-    client.join("pcdsandwichman".to_owned()).unwrap();
+    let mut channel = String::new();
 
-    join_handle.await.unwrap();
+    print!("Enter channel name: ");
+    io::stdout().flush().unwrap();
+
+    match io::stdin().read_line(&mut channel) {
+        Ok(_) => {
+            channel = channel.trim().to_string();
+            println!("Joining channel: {}", channel);
+            client.join(channel.to_owned()).unwrap();
+            join_handle.await.unwrap();
+        }
+        Err(error) => println!("Error reading input: {}", error),
+    }
 }
