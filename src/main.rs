@@ -15,8 +15,9 @@ use winapi::shared::windef::HWND;
 #[cfg(target_os = "windows")]
 use winapi::um::winuser::{EnumWindows, GetWindowTextLengthW, GetWindowTextW, SetForegroundWindow};
 #[cfg(target_os = "windows")]
-use winput::{Button, Vk};
+use winput::Vk;
 
+#[cfg(target_os = "macos")]
 use enigo::{Enigo, KeyboardControllable};
 use twitch_irc::login::StaticLoginCredentials;
 use twitch_irc::message::ServerMessage;
@@ -58,16 +59,15 @@ fn execute_command(command: &str) {
 
     println!("Executing command");
 
-    let mut enigo = Enigo::new();
     match command {
-        "a" => winput::send_key_press(Vk::X),
-        "b" => winput::send_key_press(Vk::Z),
-        "y" => winput::send_key_press(Vk::A),
-        "x" => winput::send_key_press(Vk::S),
-        "up" => winput::send_key_press(Vk::Up),
-        "down" => winput::send_key_press(Vk::Down),
-        "left" => winput::send_key_press(Vk::Left),
-        "right" => winput::send_key_press(Vk::Right),
+        "a" => winput::send(Vk::X),
+        "b" => winput::send(Vk::Z),
+        "y" => winput::send(Vk::A),
+        "x" => winput::send(Vk::S),
+        "up" => winput::send(Vk::UpArrow),
+        "down" => winput::send(Vk::DownArrow),
+        "left" => winput::send(Vk::LeftArrow),
+        "right" => winput::send(Vk::RightArrow),
         _ => (),
     }
 
