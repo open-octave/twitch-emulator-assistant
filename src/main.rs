@@ -68,14 +68,46 @@ fn execute_command(command: &str) {
 
     let mut enigo = Enigo::new();
     match command {
-        "a" => enigo.key_click(enigo::Key::Layout('x')),
-        "b" => enigo.key_click(enigo::Key::Layout('z')),
-        "y" => enigo.key_click(enigo::Key::Layout('a')),
-        "x" => enigo.key_click(enigo::Key::Layout('s')),
-        "up" => enigo.key_click(enigo::Key::UpArrow),
-        "down" => enigo.key_click(enigo::Key::DownArrow),
-        "left" => enigo.key_click(enigo::Key::LeftArrow),
-        "right" => enigo.key_click(enigo::Key::RightArrow),
+        "a" => {
+            enigo.key_down(enigo::Key::Layout('x'));
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            enigo.key_up(enigo::Key::Layout('x'));
+        }
+        "b" => {
+            enigo.key_down(enigo::Key::Layout('z'));
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            enigo.key_up(enigo::Key::Layout('z'));
+        }
+        "y" => {
+            enigo.key_down(enigo::Key::Layout('a'));
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            enigo.key_up(enigo::Key::Layout('a'));
+        }
+        "x" => {
+            enigo.key_down(enigo::Key::Layout('s'));
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            enigo.key_up(enigo::Key::Layout('s'));
+        }
+        "up" => {
+            enigo.key_down(enigo::Key::UpArrow);
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            enigo.key_up(enigo::Key::UpArrow);
+        }
+        "down" => {
+            enigo.key_down(enigo::Key::DownArrow);
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            enigo.key_up(enigo::Key::DownArrow);
+        }
+        "left" => {
+            enigo.key_down(enigo::Key::LeftArrow);
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            enigo.key_up(enigo::Key::LeftArrow);
+        }
+        "right" => {
+            enigo.key_down(enigo::Key::RightArrow);
+            std::thread::sleep(std::time::Duration::from_millis(100));
+            enigo.key_up(enigo::Key::RightArrow);
+        }
         _ => (),
     }
 
