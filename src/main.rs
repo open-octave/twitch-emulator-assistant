@@ -89,24 +89,24 @@ fn execute_command(command: &str) {
             enigo.key_up(enigo::Key::Layout('s'));
         }
         "up" => {
-            enigo.key_down(enigo::Key::UpArrow);
+            enigo.key_down(enigo::Key::Raw(0x26));
             std::thread::sleep(std::time::Duration::from_millis(100));
-            enigo.key_up(enigo::Key::UpArrow);
+            enigo.key_up(enigo::Key::Raw(0x26));
         }
         "down" => {
-            enigo.key_down(enigo::Key::DownArrow);
+            enigo.key_down(enigo::Key::Raw(0x28));
             std::thread::sleep(std::time::Duration::from_millis(100));
-            enigo.key_up(enigo::Key::DownArrow);
+            enigo.key_up(enigo::Key::Raw(0x28));
         }
         "left" => {
-            enigo.key_down(enigo::Key::LeftArrow);
+            enigo.key_down(enigo::Key::Raw(0x25));
             std::thread::sleep(std::time::Duration::from_millis(100));
-            enigo.key_up(enigo::Key::LeftArrow);
+            enigo.key_up(enigo::Key::Raw(0x25));
         }
         "right" => {
-            enigo.key_down(enigo::Key::RightArrow);
+            enigo.key_down(enigo::Key::Raw(0x27));
             std::thread::sleep(std::time::Duration::from_millis(100));
-            enigo.key_up(enigo::Key::RightArrow);
+            enigo.key_up(enigo::Key::Raw(0x27));
         }
         _ => (),
     }
