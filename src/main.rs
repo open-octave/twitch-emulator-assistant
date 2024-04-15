@@ -1,16 +1,19 @@
 #[cfg(target_os = "windows")]
 extern crate winapi;
-
 #[cfg(target_os = "windows")]
-use std::ffi::OsStr;
+use std::ffi::OsString;
 #[cfg(target_os = "windows")]
-use std::iter::once;
-#[cfg(target_os = "windows")]
-use std::os::windows::ffi::OsStrExt;
+use std::os::windows::ffi::OsStringExt;
 #[cfg(target_os = "windows")]
 use std::ptr::null_mut;
 #[cfg(target_os = "windows")]
-use winapi::um::winuser::{FindWindowW, SetForegroundWindow};
+use winapi::shared::minwindef::BOOL;
+#[cfg(target_os = "windows")]
+use winapi::shared::minwindef::LPARAM;
+#[cfg(target_os = "windows")]
+use winapi::shared::windef::HWND;
+#[cfg(target_os = "windows")]
+use winapi::um::winuser::{EnumWindows, GetWindowTextLengthW, GetWindowTextW, SetForegroundWindow};
 
 use enigo::{Enigo, KeyboardControllable};
 use twitch_irc::login::StaticLoginCredentials;
@@ -22,14 +25,24 @@ use std::io;
 use std::io::Write;
 
 #[cfg(target_os = "windows")]
-fn focus_window() {
-    let window_name = OsStr::new("RetroArch 0.9.11 x64")
-        .encode_wide()
-        .chain(once(0))
-        .collect::<Vec<u16>>();
+unsafe extern "system" fn enum_windows_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
+    let mut buffer = vec![0; GetWindowTextLengthW(hwnd) as usize + 1];
+    GetWindowTextW(hwnd, buffer.as_mut_ptr(), buffer.len() as i32);
+    let title = OsString::from_wide(&buffer[..buffer.len() - 1]);
 
+    if title.to_string_lossy().contains("RetroArch") {
+        *(lparam as *mut HWND) = hwnd;
+        0 // return false to stop enumerating
+    } else {
+        1 // continue enumerating
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn focus_window() {
+    let mut hwnd = null_mut();
     unsafe {
-        let hwnd = FindWindowW(null_mut(), window_name.as_ptr());
+        EnumWindows(Some(enum_windows_proc), &mut hwnd as *mut _ as LPARAM);
         if hwnd != null_mut() {
             SetForegroundWindow(hwnd);
         }
