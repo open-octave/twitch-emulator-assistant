@@ -14,6 +14,8 @@ use winapi::shared::minwindef::LPARAM;
 use winapi::shared::windef::HWND;
 #[cfg(target_os = "windows")]
 use winapi::um::winuser::{EnumWindows, GetWindowTextLengthW, GetWindowTextW, SetForegroundWindow};
+#[cfg(target_os = "windows")]
+use winput::{Button, Vk};
 
 use enigo::{Enigo, KeyboardControllable};
 use twitch_irc::login::StaticLoginCredentials;
@@ -49,6 +51,29 @@ fn focus_window() {
     }
 }
 
+#[cfg(target_os = "windows")]
+fn execute_command(command: &str) {
+    println!("Running command: {}", command);
+    focus_window();
+
+    println!("Executing command");
+
+    let mut enigo = Enigo::new();
+    match command {
+        "a" => winput::send_key_press(Vk::X),
+        "b" => winput::send_key_press(Vk::Z),
+        "y" => winput::send_key_press(Vk::A),
+        "x" => winput::send_key_press(Vk::S),
+        "up" => winput::send_key_press(Vk::Up),
+        "down" => winput::send_key_press(Vk::Down),
+        "left" => winput::send_key_press(Vk::Left),
+        "right" => winput::send_key_press(Vk::Right),
+        _ => (),
+    }
+
+    println!("Command executed");
+}
+
 #[cfg(target_os = "macos")]
 fn focus_window() {
     use std::process::Command;
@@ -60,6 +85,7 @@ fn focus_window() {
         .expect("failed to execute process");
 }
 
+#[cfg(target_os = "macos")]
 fn execute_command(command: &str) {
     println!("Running command: {}", command);
     focus_window();
@@ -68,46 +94,14 @@ fn execute_command(command: &str) {
 
     let mut enigo = Enigo::new();
     match command {
-        "a" => {
-            enigo.key_down(enigo::Key::Layout('x'));
-            std::thread::sleep(std::time::Duration::from_millis(100));
-            enigo.key_up(enigo::Key::Layout('x'));
-        }
-        "b" => {
-            enigo.key_down(enigo::Key::Layout('z'));
-            std::thread::sleep(std::time::Duration::from_millis(100));
-            enigo.key_up(enigo::Key::Layout('z'));
-        }
-        "y" => {
-            enigo.key_down(enigo::Key::Layout('a'));
-            std::thread::sleep(std::time::Duration::from_millis(100));
-            enigo.key_up(enigo::Key::Layout('a'));
-        }
-        "x" => {
-            enigo.key_down(enigo::Key::Layout('s'));
-            std::thread::sleep(std::time::Duration::from_millis(100));
-            enigo.key_up(enigo::Key::Layout('s'));
-        }
-        "up" => {
-            enigo.key_down(enigo::Key::Raw(0x26));
-            std::thread::sleep(std::time::Duration::from_millis(100));
-            enigo.key_up(enigo::Key::Raw(0x26));
-        }
-        "down" => {
-            enigo.key_down(enigo::Key::Raw(0x28));
-            std::thread::sleep(std::time::Duration::from_millis(100));
-            enigo.key_up(enigo::Key::Raw(0x28));
-        }
-        "left" => {
-            enigo.key_down(enigo::Key::Raw(0x25));
-            std::thread::sleep(std::time::Duration::from_millis(100));
-            enigo.key_up(enigo::Key::Raw(0x25));
-        }
-        "right" => {
-            enigo.key_down(enigo::Key::Raw(0x27));
-            std::thread::sleep(std::time::Duration::from_millis(100));
-            enigo.key_up(enigo::Key::Raw(0x27));
-        }
+        "a" => enigo.key_click(enigo::Key::Layout('x')),
+        "b" => enigo.key_click(enigo::Key::Layout('z')),
+        "y" => enigo.key_click(enigo::Key::Layout('a')),
+        "x" => enigo.key_click(enigo::Key::Layout('s')),
+        "up" => enigo.key_click(enigo::Key::UpArrow),
+        "down" => enigo.key_click(enigo::Key::DownArrow),
+        "left" => enigo.key_click(enigo::Key::LeftArrow),
+        "right" => enigo.key_click(enigo::Key::RightArrow),
         _ => (),
     }
 
