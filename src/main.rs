@@ -78,14 +78,14 @@ fn execute_command(command: &str) {
     println!("Executing command");
 
     match command {
-        "a" => winput::press_key(Vk::Z),
-        "b" => winput::press_key(Vk::X),
-        "y" => winput::press_key(Vk::C),
-        "x" => winput::press_key(Vk::V),
-        "up" => winput::press_key(Vk::W),
-        "down" => winput::press_key(Vk::S),
-        "left" => winput::press_key(Vk::A),
-        "right" => winput::press_key(Vk::D),
+        "a" => winput::press(Vk::Z).unwrap(),
+        "b" => winput::press(Vk::X).unwrap(),
+        "y" => winput::press(Vk::C).unwrap(),
+        "x" => winput::press(Vk::V).unwrap(),
+        "up" => winput::press(Vk::W).unwrap(),
+        "down" => winput::press(Vk::S).unwrap(),
+        "left" => winput::press(Vk::A).unwrap(),
+        "right" => winput::press(Vk::D).unwrap(),
         _ => (),
     }
 
