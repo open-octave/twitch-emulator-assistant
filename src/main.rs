@@ -10,6 +10,8 @@ use std::os::windows::ffi::OsStrExt;
 use std::ptr::null_mut;
 #[cfg(target_os = "windows")]
 use winapi::um::winuser::{FindWindowW, SetForegroundWindow};
+#[cfg(target_os = "windows")]
+use winput::{Button, Vk};
 
 use enigo::{Direction::Click, Enigo, Key, Keyboard, Settings};
 
@@ -46,7 +48,7 @@ fn focus_window() {
         .output()
         .expect("failed to execute process");
 }
-
+#[cfg(target_os = "macos")]
 fn execute_command(command: &str) {
     println!("Running command: {}", command);
     focus_window();
@@ -64,6 +66,26 @@ fn execute_command(command: &str) {
         "down" => enigo.key(Key::Unicode('s'), Click).unwrap(),
         "left" => enigo.key(Key::Unicode('a'), Click).unwrap(),
         "right" => enigo.key(Key::Unicode('d'), Click).unwrap(),
+        _ => (),
+    }
+
+    println!("Command executed");
+}
+
+#[cfg(target_os = "windows")]
+fn execute_command(command: &str) {
+    println!("Running command: {}", command);
+    println!("Executing command");
+
+    match command {
+        "a" => winput::press_key(Vk::Z),
+        "b" => winput::press_key(Vk::X),
+        "y" => winput::press_key(Vk::C),
+        "x" => winput::press_key(Vk::V),
+        "up" => winput::press_key(Vk::W),
+        "down" => winput::press_key(Vk::S),
+        "left" => winput::press_key(Vk::A),
+        "right" => winput::press_key(Vk::D),
         _ => (),
     }
 
