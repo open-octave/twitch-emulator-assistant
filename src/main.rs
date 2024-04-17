@@ -1,24 +1,18 @@
 #[cfg(target_os = "windows")]
 extern crate winapi;
 #[cfg(target_os = "windows")]
-use std::ffi::OsString;
+use std::ffi::OsStr;
 #[cfg(target_os = "windows")]
-use std::os::windows::ffi::OsStringExt;
+use std::iter::once;
+#[cfg(target_os = "windows")]
+use std::os::windows::ffi::OsStrExt;
 #[cfg(target_os = "windows")]
 use std::ptr::null_mut;
 #[cfg(target_os = "windows")]
-use winapi::shared::minwindef::BOOL;
-#[cfg(target_os = "windows")]
-use winapi::shared::minwindef::LPARAM;
-#[cfg(target_os = "windows")]
-use winapi::shared::windef::HWND;
-#[cfg(target_os = "windows")]
-use winapi::um::winuser::{EnumWindows, GetWindowTextLengthW, GetWindowTextW, SetForegroundWindow};
-#[cfg(target_os = "windows")]
-use winput::Vk;
+use winapi::um::winuser::{FindWindowW, SetForegroundWindow};
 
-#[cfg(target_os = "macos")]
-use enigo::{Enigo, KeyboardControllable};
+use enigo::{Direction::Click, Enigo, Key, Keyboard, Settings};
+
 use twitch_irc::login::StaticLoginCredentials;
 use twitch_irc::message::ServerMessage;
 use twitch_irc::TwitchIRCClient;
@@ -28,50 +22,18 @@ use std::io;
 use std::io::Write;
 
 #[cfg(target_os = "windows")]
-unsafe extern "system" fn enum_windows_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
-    let mut buffer = vec![0; GetWindowTextLengthW(hwnd) as usize + 1];
-    GetWindowTextW(hwnd, buffer.as_mut_ptr(), buffer.len() as i32);
-    let title = OsString::from_wide(&buffer[..buffer.len() - 1]);
-
-    if title.to_string_lossy().contains("RetroArch") {
-        *(lparam as *mut HWND) = hwnd;
-        0 // return false to stop enumerating
-    } else {
-        1 // continue enumerating
-    }
-}
-
-#[cfg(target_os = "windows")]
 fn focus_window() {
-    let mut hwnd = null_mut();
+    let window_name = OsStr::new("RetroArch 0.9.11 x64")
+        .encode_wide()
+        .chain(once(0))
+        .collect::<Vec<u16>>();
+
     unsafe {
-        EnumWindows(Some(enum_windows_proc), &mut hwnd as *mut _ as LPARAM);
+        let hwnd = FindWindowW(null_mut(), window_name.as_ptr());
         if hwnd != null_mut() {
             SetForegroundWindow(hwnd);
         }
     }
-}
-
-#[cfg(target_os = "windows")]
-fn execute_command(command: &str) {
-    println!("Running command: {}", command);
-    focus_window();
-
-    println!("Executing command");
-
-    match command {
-        "a" => winput::send(Vk::X),
-        "b" => winput::send(Vk::Z),
-        "y" => winput::send(Vk::A),
-        "x" => winput::send(Vk::S),
-        "up" => winput::send(Vk::UpArrow),
-        "down" => winput::send(Vk::DownArrow),
-        "left" => winput::send(Vk::LeftArrow),
-        "right" => winput::send(Vk::RightArrow),
-        _ => (),
-    }
-
-    println!("Command executed");
 }
 
 #[cfg(target_os = "macos")]
@@ -85,23 +47,23 @@ fn focus_window() {
         .expect("failed to execute process");
 }
 
-#[cfg(target_os = "macos")]
 fn execute_command(command: &str) {
     println!("Running command: {}", command);
     focus_window();
 
     println!("Executing command");
 
-    let mut enigo = Enigo::new();
+    let mut enigo = Enigo::new(&Settings::default()).unwrap();
+
     match command {
-        "a" => enigo.key_click(enigo::Key::Layout('x')),
-        "b" => enigo.key_click(enigo::Key::Layout('z')),
-        "y" => enigo.key_click(enigo::Key::Layout('a')),
-        "x" => enigo.key_click(enigo::Key::Layout('s')),
-        "up" => enigo.key_click(enigo::Key::UpArrow),
-        "down" => enigo.key_click(enigo::Key::DownArrow),
-        "left" => enigo.key_click(enigo::Key::LeftArrow),
-        "right" => enigo.key_click(enigo::Key::RightArrow),
+        "a" => enigo.key(Key::Unicode('z'), Click).unwrap(),
+        "b" => enigo.key(Key::Unicode('x'), Click).unwrap(),
+        "y" => enigo.key(Key::Unicode('c'), Click).unwrap(),
+        "x" => enigo.key(Key::Unicode('v'), Click).unwrap(),
+        "up" => enigo.key(Key::Unicode('w'), Click).unwrap(),
+        "down" => enigo.key(Key::Unicode('s'), Click).unwrap(),
+        "left" => enigo.key(Key::Unicode('a'), Click).unwrap(),
+        "right" => enigo.key(Key::Unicode('d'), Click).unwrap(),
         _ => (),
     }
 
