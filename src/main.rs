@@ -6,7 +6,7 @@ use twitch_irc::{ClientConfig, SecureTCPTransport};
 use std::io;
 use std::io::Write;
 
-mod macos_impl;
+mod win_impl;
 
 #[tokio::main]
 pub async fn main() {
@@ -32,7 +32,7 @@ pub async fn main() {
                     // If the command is a valid command, execute it
                     match command.as_str() {
                         "a" | "b" | "x" | "y" | "up" | "down" | "left" | "right" => {
-                            macos_impl::execute_command(command.trim());
+                            win_impl::execute_command(command.trim());
                         }
                         _ => {}
                     }
