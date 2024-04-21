@@ -8,44 +8,22 @@ use std::io::Write;
 
 use enigo::{Direction::Click, Enigo, Key, Keyboard, Settings};
 
-// pub fn focus_window() {
-//     use std::process::Command;
+#[cfg(target_os = "macos")]
+fn focus_window() {
+    use std::process::Command;
 
-//     Command::new("osascript")
-//         .arg("-e")
-//         .arg("tell application \"RetroArch\" to activate")
-//         .output()
-//         .expect("failed to execute process");
-// }
+    Command::new("osascript")
+        .arg("-e")
+        .arg("tell application \"RetroArch\" to activate")
+        .output()
+        .expect("failed to execute process");
+}
 
-// pub fn execute_command(command: &str) {
-//     println!("Running command: {}", command);
-//     // focus_window();
+#[cfg(target_os = "macos")]
+fn execute_command(command: &str) {
+    focus_window();
 
-//     println!("Executing command");
-
-//     let mut enigo = Enigo::new(&Settings::default()).unwrap();
-
-//     match command {
-//         "a" => enigo.key(Key::Unicode('z'), Click).unwrap(),
-//         "b" => enigo.key(Key::Unicode('x'), Click).unwrap(),
-//         "y" => enigo.key(Key::Unicode('c'), Click).unwrap(),
-//         "x" => enigo.key(Key::Unicode('v'), Click).unwrap(),
-//         "up" => enigo.key(Key::Unicode('w'), Click).unwrap(),
-//         "down" => enigo.key(Key::Unicode('s'), Click).unwrap(),
-//         "left" => enigo.key(Key::Unicode('a'), Click).unwrap(),
-//         "right" => enigo.key(Key::Unicode('d'), Click).unwrap(),
-//         _ => (),
-//     }
-
-//     println!("Command executed");
-// }
-
-pub fn execute_command(command: &str) {
-    println!("Running command: {}", command);
-    // focus_window();
-
-    println!("Executing command");
+    println!("Executing command: {}", command);
 
     let mut enigo = Enigo::new(&Settings::default()).unwrap();
 
@@ -66,11 +44,39 @@ pub fn execute_command(command: &str) {
         _ => (),
     }
 
-    println!("Command executed");
+    println!("Command executed: {}", command);
+}
+
+#[cfg(target_os = "windows")]
+fn execute_command(command: &str) {
+    focus_window();
+
+    println!("Executing command: {}", command);
+
+    let mut enigo = Enigo::new(&Settings::default()).unwrap();
+
+    match command {
+        // Buttons
+        "a" => enigo.key(Key::Unicode('x'), Click).unwrap(),
+        "b" => enigo.key(Key::Unicode('z'), Click).unwrap(),
+        "y" => enigo.key(Key::Unicode('a'), Click).unwrap(),
+        "x" => enigo.key(Key::Unicode('s'), Click).unwrap(),
+
+        // Directions
+        "up" => enigo.key(Key::UpArrow, Click).unwrap(),
+        "down" => enigo.key(Key::DownArrow, Click).unwrap(),
+        "left" => enigo.key(Key::LeftArrow, Click).unwrap(),
+        "right" => enigo.key(Key::RightArrow, Click).unwrap(),
+
+        // Fallback
+        _ => (),
+    }
+
+    println!("Command executed: {}", command);
 }
 
 #[tokio::main]
-pub async fn main() {
+async fn main() {
     println!("Starting Twitch Game Emulator Assistant");
 
     let config = ClientConfig::default();
@@ -88,12 +94,15 @@ pub async fn main() {
                         msg.message_text.trim()
                     );
 
-                    let command = &msg.message_text.to_lowercase();
+                    let raw_message = msg.message_text;
+                    let sanitized_command = raw_message.to_lowercase().trim().to_string();
 
-                    // If the command is a valid command, execute it
-                    match command.as_str() {
-                        "a" | "b" | "x" | "y" | "up" | "down" | "left" | "right" => {
-                            execute_command(command.trim());
+                    let permitted_commands =
+                        vec!["a", "b", "x", "y", "up", "down", "left", "right"];
+
+                    match sanitized_command {
+                        _ if permitted_commands.contains(&sanitized_command.as_str()) => {
+                            execute_command(&sanitized_command);
                         }
                         _ => {}
                     }
