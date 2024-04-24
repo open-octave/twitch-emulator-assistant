@@ -6,11 +6,8 @@ use twitch_irc::{ClientConfig, SecureTCPTransport};
 use std::io;
 use std::io::Write;
 
-#[cfg(target_os = "macos")]
+// #[cfg(target_os = "macos")]
 mod macos;
-
-#[cfg(target_os = "windows")]
-mod windows;
 
 #[tokio::main]
 async fn main() {
@@ -39,7 +36,7 @@ async fn main() {
 
                     match sanitized_command {
                         _ if permitted_commands.contains(&sanitized_command.as_str()) => {
-                            execute_command(&sanitized_command);
+                            macos::logic::execute_command(&sanitized_command);
                         }
                         _ => {}
                     }

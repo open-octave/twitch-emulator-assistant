@@ -10,7 +10,7 @@ fn focus_window() {
         .expect("failed to execute process");
 }
 
-fn execute_command(command: &str) {
+pub fn execute_command(command: &str) {
     focus_window();
 
     println!("Executing command: {}", command);
