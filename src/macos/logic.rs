@@ -1,5 +1,6 @@
 use enigo::{Direction::Click, Enigo, Key, Keyboard, Settings};
 
+#[cfg(target_os = "macos")]
 fn focus_window() {
     use std::process::Command;
 
@@ -11,6 +12,7 @@ fn focus_window() {
 }
 
 pub fn execute_command(command: &str) {
+    #[cfg(target_os = "macos")]
     focus_window();
 
     println!("Executing command: {}", command);
